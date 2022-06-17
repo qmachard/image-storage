@@ -14,11 +14,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.use(express.static('src/public'));
-
-app.get('/', async function (req, res) {
-    await res.render('index');
-});
+app.get('/', (req, res) => res.send('🏠'));
 
 app.use('/images', ImageController);
 
