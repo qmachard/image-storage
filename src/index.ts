@@ -22,12 +22,12 @@ app.get('/', async function (req, res) {
 
 app.use('/images', ImageController);
 
-app.all('*', UnknownRoutesHandler)
+app.all('*', UnknownRoutesHandler);
 
 app.use(ExceptionsHandler);
 
-const port = process.env.API_PORT || 3000;
+const port = process.env.PORT || 3000;
 
 app.listen(port, function () {
-    console.log('Server is running on PORT',port);
+    console.log('Server is running on PORT', port);
 });
