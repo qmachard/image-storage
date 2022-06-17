@@ -4,10 +4,13 @@ import expressAsyncHandler from 'express-async-handler';
 import { BadRequestException, NotFoundException } from '~/utils/exceptions';
 
 import { uploadHandler } from '~/middlewares/upload.handler';
+import { SecretKeyHandler } from '~/middlewares/secretKey.handler';
 
 import { generateFilename, getProcessedImage, saveImage } from '~/domains/image/image.service';
 
 const ImageController = Router();
+
+ImageController.use(SecretKeyHandler);
 
 ImageController.get('/:filename', expressAsyncHandler(async (req, res) => {
     const { filename } = req.params;

@@ -1,0 +1,37 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build & Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Node.js version
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'yarn'
+
+      - name: yarn install (dependencies)
+        run: yarn install
+
+      - name: yarn build (all packages)
+        run: yarn build
+
+      - name: Docker build
+        run: |
+          yarn workspaces focus --production server
+          docker build . -t qmachard/image-storage:${{ github.sha }}
+
+      - name: Docker push
+        run: |
+          docker push qmachard/image-storage:${{ github.sha }}
