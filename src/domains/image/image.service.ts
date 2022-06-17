@@ -32,3 +32,15 @@ export function generateFilename(mimetype: string = 'image/jpeg'): string {
 
     return `${uuidv4()}.${extension}`;
 }
+
+export function saveImage(path: string, filename: string): string {
+    const filepath = getFilepath(filename);
+
+    // Copy file to destination
+    fs.copyFileSync(path, `${filepath}/${filename}`);
+
+    // Remove file from source
+    fs.rmSync(path);
+
+    return `${filepath}/${filename}`;
+}

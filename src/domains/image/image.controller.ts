@@ -5,7 +5,7 @@ import { NotFoundException } from '~/utils/exceptions';
 
 import { uploadHandler } from '~/middlewares/upload.handler';
 
-import { generateFilename, getFilepath } from '~/domains/image/image.service';
+import { generateFilename, getFilepath, saveImage } from '~/domains/image/image.service';
 
 const ImageController = Router();
 
@@ -35,18 +35,15 @@ ImageController.post('/', uploadHandler.single('image'), async (req, res) => {
     const { path, mimetype } = req.file;
 
     const filename = generateFilename(mimetype);
-    const filepath = getFilepath(filename);
 
-    // Copy file to destination
-    fs.copyFileSync(path, `${filepath}/${filename}`);
-
-    // Remove file from source
-    fs.rmSync(path);
+    saveImage(path, filename);
 
     return res
         .status(201)
         .json({
             url: `/images/${filename}`,
+            filename,
+            mimetype,
         });
 })
 
