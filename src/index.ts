@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import { UnknownRoutesHandler } from '~/middlewares/unknownRoutes.handler';
 import { ExceptionsHandler } from '~/middlewares/exceptions.handler';
 
+import { ImageController } from '~/domains/image/image.controller';
+
 dotenv.config();
 
 const app = express();
@@ -13,6 +15,8 @@ app.use(express.json());
 app.use(cors());
 
 app.get('/', (req, res) => res.send('🏠'));
+
+app.use('/images', ImageController);
 
 app.all('*', UnknownRoutesHandler)
 
