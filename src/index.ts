@@ -2,10 +2,6 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 
-console.log(process.env.PORT);
-console.log(process.env.IMAGE_STORAGE);
-console.log(process.env.SECRET_KEY);
-
 import { ExceptionsHandler } from '~/middlewares/exceptions.handler';
 import { UnknownRoutesHandler } from '~/middlewares/unknownRoutes.handler';
 

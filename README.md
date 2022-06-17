@@ -35,11 +35,38 @@ Table of contents
 
 # Installation
 
-## Requirements
+## Docker
+
+```shell
+docker run \
+  --env "SECRET_KEY=<change-it>" \
+  --publish 3000:3000/tcp \
+  --volume "${PWD}/images:/data/images" \
+  --name image-storage \
+  qmachard/image-storage
+```
+
+## Docker compose
+
+```yaml
+version: "3.7"
+services:
+  image-storage:
+    image: qmachard/image-storage:latest
+    container_name: "image-storage"
+    environment:
+      - SECRET_KEY=<change-it>
+    volumes:
+      - <your-path>:/data/images
+```
+
+## Manually
+
+### Requirements
 
 * NodeJS v16.15+
 
-## Quick Start
+### Quick Start
 
 1. Clone or download project
 
