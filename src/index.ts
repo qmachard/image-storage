@@ -14,7 +14,11 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.get('/', (req, res) => res.send('🏠'));
+app.use(express.static('src/public'));
+
+app.get('/', async function (req, res) {
+    await res.render('index');
+});
 
 app.use('/images', ImageController);
 
@@ -22,6 +26,8 @@ app.all('*', UnknownRoutesHandler)
 
 app.use(ExceptionsHandler);
 
-const port = process.env.API_PORT ?? 3000;
+const port = process.env.API_PORT || 3000;
 
-app.listen(port, () => console.log(`API listening port ${port}...`))
+app.listen(port, function () {
+    console.log('Server is running on PORT',port);
+});
