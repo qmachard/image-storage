@@ -1,9 +1,10 @@
 import cors from 'cors';
-import express from 'express';
 import dotenv from 'dotenv';
+import express from 'express';
 
-import { UnknownRoutesHandler } from '~/middlewares/unknownRoutes.handler';
 import { ExceptionsHandler } from '~/middlewares/exceptions.handler';
+import { SecretKeyHandler } from '~/middlewares/secretKey.handler';
+import { UnknownRoutesHandler } from '~/middlewares/unknownRoutes.handler';
 
 import { ImageController } from '~/domains/image/image.controller';
 
@@ -14,17 +15,14 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.use(express.static('src/public'));
-
-app.get('/', async function (req, res) {
-    await res.render('index');
-});
+app.get('/', (req, res) => res.send('🏠'));
 
 app.use('/images', ImageController);
 
 app.all('*', UnknownRoutesHandler);
 
 app.use(ExceptionsHandler);
+app.use(SecretKeyHandler);
 
 const port = process.env.PORT || 3000;
 
