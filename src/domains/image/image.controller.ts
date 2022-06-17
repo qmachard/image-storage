@@ -1,35 +1,35 @@
 import { Router } from 'express';
-import fs from 'fs';
+import expressAsyncHandler from 'express-async-handler';
 
-import { NotFoundException } from '~/utils/exceptions';
+import { BadRequestException, NotFoundException } from '~/utils/exceptions';
 
 import { uploadHandler } from '~/middlewares/upload.handler';
 
-import { generateFilename, getFilepath, saveImage } from '~/domains/image/image.service';
+import { generateFilename, getProcessedImage, saveImage } from '~/domains/image/image.service';
 
 const ImageController = Router();
 
-ImageController.get('/:filename', (req, res) => {
+ImageController.get('/:filename', expressAsyncHandler(async (req, res) => {
     const { filename } = req.params;
+    const { w, h } = req.query;
 
-    const filepath = getFilepath(filename);
+    const processedImage = await getProcessedImage(filename, {
+        width: 'string' === typeof w ? parseInt(w) : undefined,
+        height: 'string' === typeof h ? parseInt(h) : undefined,
+    });
 
-    if (!fs.existsSync(`${filepath}/${filename}`)) {
+    if (null === processedImage) {
         throw new NotFoundException(`Image not found.`);
     }
 
-    return res
+    res
         .status(200)
-        .sendFile(`${filepath}/${filename}`);
-});
+        .sendFile(processedImage);
+}));
 
-ImageController.post('/', uploadHandler.single('image'), async (req, res) => {
+ImageController.post('/', uploadHandler.single('image'), expressAsyncHandler(async (req, res) => {
     if (!req.file) {
-        return res
-            .status(400)
-            .json({
-                error: 'You must provide image file.',
-            });
+        throw new BadRequestException(`You must provide image file.`);
     }
 
     const { path, mimetype } = req.file;
@@ -38,13 +38,13 @@ ImageController.post('/', uploadHandler.single('image'), async (req, res) => {
 
     saveImage(path, filename);
 
-    return res
+    res
         .status(201)
         .json({
             url: `/images/${filename}`,
             filename,
             mimetype,
         });
-})
+}));
 
 export { ImageController };
