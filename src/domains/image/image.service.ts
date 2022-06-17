@@ -1,12 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
+import sharp, { FitEnum } from 'sharp';
 
-export function getFilepath(filename: string, createIfNotExists: boolean = true): string {
-    const a = filename.substring(0, 1);
-    const b = filename.substring(1, 2);
-    const c = filename.substring(2, 3);
+import { NotFoundException } from '~/utils/exceptions';
 
-    const filepath = `${process.env.IMAGE_STORAGE}/${a}/${b}/${c}`;
+export function getFilepath(filename: string, createIfNotExists: boolean = true, subDir: string = 'original'): string {
+    if (!process.env.IMAGE_STORAGE) {
+        throw new Error('You must define a storage for image, check your .env');
+    }
+
+    const filepath = `${process.env.IMAGE_STORAGE}/${subDir}`;
 
     if (!fs.existsSync(filepath) && createIfNotExists) {
         fs.mkdirSync(filepath, { recursive: true });
@@ -43,4 +46,49 @@ export function saveImage(path: string, filename: string): string {
     fs.rmSync(path);
 
     return `${filepath}/${filename}`;
+}
+
+interface ProcessedImageOptions {
+    width?: number;
+    height?: number;
+}
+
+export async function getProcessedImage(filename: string, options: ProcessedImageOptions): Promise<string | null> {
+    const { width, height } = options;
+
+    const filepath = getFilepath(filename, false);
+
+    if (!fs.existsSync(`${filepath}/${filename}`)) {
+        return null;
+    }
+
+    let prefix = '';
+
+    if (width) {
+        prefix += `w${width}_`;
+    }
+
+    if (height) {
+        prefix += `h${height}_`;
+    }
+
+    if ('' === prefix) {
+        return `${filepath}/${filename}`;
+    }
+
+    const cacheFilePath = getFilepath(filename, true, 'cache');
+    const cacheFileName = `${prefix}${filename}`;
+
+    if (!fs.existsSync(`${cacheFilePath}/${cacheFileName}`)) {
+        await sharp(`${filepath}/${filename}`)
+            .resize({
+                width,
+                height,
+                fit: sharp.fit.inside,
+                withoutEnlargement: true
+            })
+            .toFile(`${cacheFilePath}/${cacheFileName}`);
+    }
+
+    return `${cacheFilePath}/${cacheFileName}`;
 }
