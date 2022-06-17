@@ -1,9 +1,10 @@
 import cors from 'cors';
-import express from 'express';
 import dotenv from 'dotenv';
+import express from 'express';
 
-import { UnknownRoutesHandler } from '~/middlewares/unknownRoutes.handler';
 import { ExceptionsHandler } from '~/middlewares/exceptions.handler';
+import { SecretKeyHandler } from '~/middlewares/secretKey.handler';
+import { UnknownRoutesHandler } from '~/middlewares/unknownRoutes.handler';
 
 import { ImageController } from '~/domains/image/image.controller';
 
@@ -21,6 +22,7 @@ app.use('/images', ImageController);
 app.all('*', UnknownRoutesHandler);
 
 app.use(ExceptionsHandler);
+app.use(SecretKeyHandler);
 
 const port = process.env.PORT || 3000;
 
