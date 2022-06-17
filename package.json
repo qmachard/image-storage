@@ -1,0 +1,13 @@
+{
+  "name": "image-storage",
+  "version": "1.0.0",
+  "description": "A simple image bucket API with resize",
+  "main": "index.js",
+  "repository": "git@github.com:qmachard/image-storage.git",
+  "author": {
+    "name": "Quentin Machard",
+    "email": "quentin.machard@gmail.com",
+    "url": "https://github.com/qmachard"
+  },
+  "license": "MIT"
+}
