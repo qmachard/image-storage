@@ -1,8 +1,11 @@
 import cors from 'cors';
 import express from 'express';
+import dotenv from 'dotenv';
 
 import { UnknownRoutesHandler } from '~/middlewares/unknownRoutes.handler';
 import { ExceptionsHandler } from '~/middlewares/exceptions.handler';
+
+dotenv.config();
 
 const app = express();
 
