@@ -102,16 +102,24 @@ http://localhost:3000
 
 # API
 
+## Signature generation
+
+Signature is a Base64 encoded string which contains values : `secret`, `iv` and `timestamp`.
+
+```
+const signature = Base64(`${secret}.${iv}.${timestamp}`);
+```
+
+Signature can be passed as header `X-API-SIGNATURE` or query params `signature`.
+
 ## Upload Image
 
 ```
-POST /images
+POST /images{?signature}
 
 + Headers
 
-X-API-SECRET=<secret from generateKey>
-X-API-IV=<iv from generateKey>
-X-API-TIMESTAMP=<timestamp from generateKey>
+X-API-SIGNATURE=<signature>
 
 + Body
 
@@ -131,13 +139,11 @@ Content-Disposition: form-data; name="image"; filename="IMG_E2355.jpg"
 ## Get Image
 
 ```
-GET /images/{filename.ext}{?w}{?h}
+GET /images/{filename.ext}{?w}{?h}{?signature}
 
 + Headers
 
-X-API-SECRET=<secret from generateKey>
-X-API-IV=<iv from generateKey>
-X-API-TIMESTAMP=<timestamp from generateKey>
+X-API-SIGNATURE=<signature>
 
 + Response 200 (image/jpeg)
 
@@ -150,6 +156,7 @@ X-API-TIMESTAMP=<timestamp from generateKey>
 |-----------|---------------------------|---------|
 | w         | Max with of image in px   | null    |
 | h         | Max height of image in px | null    |
+| signature | Signature from secretKey  | null    |
 
 ---
 
