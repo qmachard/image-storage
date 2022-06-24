@@ -5,12 +5,20 @@ const secretKey = require('secret-key');
 import { UnauthorizedException } from '~/utils/exceptions';
 
 export const SecretKeyHandler = (req: Request, res: Response, next: NextFunction) => {
-    const secret = req.header('X-API-SECRET');
-    const iv = req.header('X-API-IV');
-    const timestamp = req.header('X-API-TIMESTAMP');
+    let { signature } = req.query;
+
+    if (!signature) {
+        signature = req.header('X-API-SIGNATURE')
+    }
+
+    if (!signature) {
+        throw new UnauthorizedException('You must provide signature.');
+    }
+
+    const [ secret, iv, timestamp ] = Buffer.from(signature as string, 'base64').toString('ascii').split('.');
 
     if (!secret || !iv || !timestamp) {
-        throw new UnauthorizedException('You must provide secret.');
+        throw new UnauthorizedException('You must provide signature.');
     }
 
     if (!secretKey.check(process.env.SECRET_KEY, secret, iv, timestamp)) {
@@ -18,4 +26,4 @@ export const SecretKeyHandler = (req: Request, res: Response, next: NextFunction
     }
 
     next();
-}
+};
