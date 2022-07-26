@@ -1,8 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
-import sharp, { FitEnum } from 'sharp';
-
-import { NotFoundException } from '~/utils/exceptions';
+import sharp from 'sharp';
 
 export function getFilepath(filename: string, createIfNotExists: boolean = true, subDir: string = 'original'): string {
     if (!process.env.IMAGE_STORAGE) {
@@ -87,6 +85,7 @@ export async function getProcessedImage(filename: string, options: ProcessedImag
                 fit: sharp.fit.inside,
                 withoutEnlargement: true
             })
+            .withMetadata()
             .toFile(`${cacheFilePath}/${cacheFileName}`);
     }
 
